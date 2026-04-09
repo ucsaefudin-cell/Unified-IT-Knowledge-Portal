@@ -1,0 +1,14 @@
+{
+  "nav.home": "Home",
+  "nav.sap": "SAP Business One",
+  "nav.aws": "AWS Cloud",
+  "nav.best_practices": "Best Practices",
+  "nav.login": "Login",
+  "nav.register": "Register",
+  "nav.logout": "Logout",
+  "search.placeholder": "Search articles...",
+  "search.no_results": "No results found for your search.",
+  "content.no_articles": "No content available yet.",
+  "auth.register_title": "Create New Account",
+  "auth.login_title": "Sign In to Your Account"
+}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}AWS Cloud Infrastructure — IT Knowledge Portal{% endblock %}
+{% block content %}
+<h1 class="text-3xl font-bold text-orange-800 mb-6">AWS Cloud Infrastructure</h1>
+{% if articles %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for article in articles %}
+        <div class="bg-white border rounded-xl p-4 shadow-sm">
+            <span class="text-xs text-orange-500 font-medium uppercase">{{ article.topic_category }}</span>
+            <h3 class="font-semibold mt-1">{{ article.title }}</h3>
+            <p class="text-sm text-gray-500 mt-2">{{ article.summary or '' }}</p>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-gray-400">Belum ada konten tersedia.</p>
+{% endif %}
+{% endblock %}

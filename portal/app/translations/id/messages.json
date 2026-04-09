@@ -1,0 +1,14 @@
+{
+  "nav.home": "Beranda",
+  "nav.sap": "SAP Business One",
+  "nav.aws": "AWS Cloud",
+  "nav.best_practices": "Best Practices",
+  "nav.login": "Masuk",
+  "nav.register": "Daftar",
+  "nav.logout": "Keluar",
+  "search.placeholder": "Cari artikel...",
+  "search.no_results": "Tidak ada hasil yang ditemukan.",
+  "content.no_articles": "Belum ada konten tersedia.",
+  "auth.register_title": "Buat Akun Baru",
+  "auth.login_title": "Masuk ke Akun Anda"
+}

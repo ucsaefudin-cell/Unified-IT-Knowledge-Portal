@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="{{ session.get('lang', 'en') }}">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Unified IT Knowledge Portal{% endblock %}</title>
+    <!-- Tailwind CSS via CDN untuk development -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm px-6 py-3 flex items-center justify-between">
+        <a href="{{ url_for('main.dashboard') }}" class="text-xl font-bold text-blue-700">
+            IT Knowledge Portal
+        </a>
+        <div class="flex items-center gap-4">
+            <!-- Tombol language toggle -->
+            <button id="lang-toggle" class="text-sm border rounded px-2 py-1">
+                {{ 'ID' if session.get('lang', 'en') == 'en' else 'EN' }}
+            </button>
+            {% if current_user.is_authenticated %}
+                <span class="text-sm text-gray-600">{{ current_user.email }}</span>
+                <a href="{{ url_for('auth.logout') }}" class="text-sm text-red-500">Logout</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="text-sm text-blue-600">Login</a>
+                <a href="{{ url_for('auth.register') }}" class="text-sm text-green-600">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Konten utama halaman -->
+    <main class="flex-1 container mx-auto px-4 py-8">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="mb-4 p-3 rounded
+                    {% if category == 'error' %}bg-red-100 text-red-700
+                    {% elif category == 'success' %}bg-green-100 text-green-700
+                    {% else %}bg-blue-100 text-blue-700{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t text-center py-4 text-sm text-gray-500">
+        &copy; 2026 Ucu Saefudin. All rights reserved.
+    </footer>
+
+    <!-- Script JavaScript -->
+    <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

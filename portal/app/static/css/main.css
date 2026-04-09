@@ -1,0 +1,22 @@
+/*
+ * main.css — Stylesheet tambahan untuk Unified IT Knowledge Portal
+ * Tailwind CSS digunakan sebagai framework utama (via CDN di base.html)
+ * File ini berisi override dan komponen kustom
+ */
+
+/* Efek blur untuk konten best practice yang dikunci */
+.content-locked {
+    filter: blur(4px);
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Overlay lock icon di atas konten yang diblur */
+.lock-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}

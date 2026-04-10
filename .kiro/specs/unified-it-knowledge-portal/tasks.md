@@ -2,9 +2,27 @@
 
 ## Overview
 
-Implementasi Flask full-stack web application dengan dua pilar konten (SAP & AWS), sistem autentikasi berbasis email, live search, dan bilingual toggle. Database menggunakan SQLite lokal untuk development (dapat diganti ke PostgreSQL RDS via `DATABASE_URL` env var). Semua komentar dan docstring ditulis dalam Bahasa Indonesia.
+Implementasi Flask full-stack web application dengan dua pilar konten:
+- **ERP Systems** (SAP Business One v10+)
+- **Cloud Computing Infrastructure** (GCP — Multi-Cloud GCP & Azure)
+
+Arsitektur telah dimigrasikan dari AWS ke **Google Cloud Platform (GCP)**:
+- Web Server: GCP Compute Engine
+- Database: GCP Cloud SQL (PostgreSQL 18.3)
+- Static Storage: GCP Cloud Storage
+- Automation: GCP Cloud Functions + Cloud Scheduler
+
+Database menggunakan GCP Cloud SQL PostgreSQL untuk production, SQLite lokal untuk development (via `DATABASE_URL` env var). Semua komentar dan docstring ditulis dalam Bahasa Indonesia. Semua kode Python mengikuti standar **PEP 8**, prinsip **DRY**, dan penamaan variabel/fungsi yang deskriptif.
 
 ## Tasks
+
+- [x] 0. Clean Code & Standards (Task baru — standar wajib untuk semua kode)
+  - Semua kode Python WAJIB mengikuti PEP 8 (indentasi 4 spasi, max 79 karakter per baris)
+  - Prinsip DRY: tidak ada duplikasi logika — ekstrak ke fungsi/service terpisah
+  - Nama variabel dan fungsi harus deskriptif (hindari `x`, `tmp`, `data` tanpa konteks)
+  - Semua fungsi WAJIB memiliki docstring dalam Bahasa Indonesia
+  - Semua inline comment dalam Bahasa Indonesia
+  - _Berlaku untuk semua task berikutnya_
 
 - [x] 1. Buat struktur folder Flask dan konfigurasi dasar
   - Buat direktori `portal/` dengan struktur modular sesuai desain
@@ -36,17 +54,24 @@ Implementasi Flask full-stack web application dengan dua pilar konten (SAP & AWS
 - [ ] 3. Checkpoint — Pastikan semua model dapat di-migrate ke SQLite
   - Jalankan `flask db init && flask db migrate && flask db upgrade`, pastikan tidak ada error.
 
-- [ ] 4. Implementasi Auth Service dan routes autentikasi
-  - [ ] 4.1 Buat `portal/app/services/auth_service.py`
-    - Fungsi: register_user, verify_token, login_user, logout_user
-    - Validasi panjang password (≥ 8 karakter), email unik, token expiry 24 jam
-    - _Requirements: 5.1, 5.2, 5.3, 5.5, 5.6, 5.7, 6.1, 6.3, 6.5_
+- [-] 4. Implementasi Auth Service dan routes autentikasi
+  - [x] 4.1 Buat `portal/app/services/auth_service.py`
+    - Fungsi: register_new_user, authenticate_user, logout_current_user
+    - Validasi panjang password (≥ 8 karakter), email unik
+    - MVP: simpan user langsung tanpa email verification (bypass SES)
+    - _Requirements: 5.1, 5.5, 5.6, 6.1, 6.3_
   - [ ] 4.2 Buat `portal/app/services/email_service.py`
-    - Fungsi pengiriman email verifikasi via AWS SES (atau SMTP fallback untuk dev)
+    - Fungsi pengiriman email verifikasi via Gmail SMTP (implementasi penuh nanti)
     - _Requirements: 5.2_
-  - [ ] 4.3 Buat `portal/app/routes/auth.py`
-    - Route: POST /auth/register, GET /auth/verify/<token>, POST /auth/login, POST /auth/logout
-    - _Requirements: 5.1, 5.3, 6.1, 6.3_
+  - [x] 4.3 Buat `portal/app/routes/auth.py`
+    - Route: POST /auth/register, POST /auth/login, GET /auth/logout
+    - Flash messages untuk feedback user
+    - _Requirements: 5.1, 6.1, 6.3_
+  - [x] 4.5 Security Hardening (Task baru)
+    - CSRF Protection via Flask-WTF (CSRFProtect)
+    - Security Headers via Flask-Talisman
+    - Rate Limiting via Flask-Limiter pada route login
+    - _Requirements: keamanan aplikasi production_
   - [ ]* 4.4 Tulis property test untuk registrasi user
     - **Property 3: Registration creates an unverified user**
     - **Validates: Requirements 5.1**
@@ -88,24 +113,25 @@ Implementasi Flask full-stack web application dengan dua pilar konten (SAP & AWS
     - **Property 11: Search results are complete and correctly formatted**
     - **Validates: Requirements 7.2, 7.3, 7.4**
 
-- [ ] 7. Implementasi routes utama dan template Jinja2
-  - [ ] 7.1 Buat `portal/app/routes/main.py`
-    - Route: GET / (dashboard), GET /sap, GET /aws, GET /best-practices
+- [-] 7. Implementasi routes utama dan template Jinja2
+  - [x] 7.1 Buat `portal/app/routes/main.py`
+    - Route: GET / (dashboard), GET /sap, GET /gcp, GET /best-practices
     - _Requirements: 1.1, 1.2, 2.1, 3.1, 4.1_
-  - [ ] 7.2 Buat `portal/app/templates/base.html`
-    - Layout dasar dengan navbar, footer, language toggle, dan slot konten
+  - [x] 7.2 Buat `portal/app/templates/base.html`
+    - Layout dasar dengan navbar, footer, language toggle, dark/light mode toggle
     - Footer: "© 2026 Ucu Saefudin. All rights reserved."
     - _Requirements: 1.4, 8.1_
-  - [ ] 7.3 Buat `portal/app/templates/dashboard.html`
-    - Bento Box/Grid layout dengan dua kartu pillar (SAP & AWS)
+  - [x] 7.3 Buat `portal/app/templates/dashboard.html`
+    - Bento Box/Grid layout — ERP (biru) dan Cloud Infrastructure (oranye)
+    - Placeholder konten: Best Practices + Troubleshooting & Solutions
     - _Requirements: 1.1, 1.2, 1.3_
-  - [ ] 7.4 Buat `portal/app/templates/sap/index.html` dan `portal/app/templates/aws/index.html`
+  - [x] 7.4 Buat `portal/app/templates/sap/index.html` dan `portal/app/templates/gcp/index.html`
     - Render kartu artikel dari database, tampilkan placeholder jika kosong
     - _Requirements: 2.2, 2.4, 3.2, 3.4_
-  - [ ] 7.5 Buat `portal/app/templates/best_practices/index.html`
+  - [x] 7.5 Buat `portal/app/templates/best_practices/index.html`
     - Tampilkan teaser + blur + lock icon untuk guest; full content untuk user terautentikasi
     - _Requirements: 4.1, 4.2, 4.3, 4.6_
-  - [ ] 7.6 Buat `portal/app/templates/auth/register.html` dan `login.html`
+  - [x] 7.6 Buat `portal/app/templates/auth/register.html` dan `login.html`
     - Form registrasi dan login dengan validasi sisi klien dasar
     - _Requirements: 5.1, 6.1_
   - [ ]* 7.7 Tulis property test untuk rendering pillar page
@@ -115,16 +141,19 @@ Implementasi Flask full-stack web application dengan dua pilar konten (SAP & AWS
     - **Property 2: Best Practice teaser visibility is access-controlled**
     - **Validates: Requirements 4.1, 4.2, 4.6**
 
-- [ ] 8. Implementasi static assets (CSS, JS)
-  - [ ] 8.1 Buat `portal/app/static/css/main.css` dengan Tailwind CSS (CDN atau build)
-    - Styling grid dashboard, kartu artikel, blur effect untuk best practices
+- [x] 8. Implementasi static assets (CSS, JS)
+  - [x] 8.1 Buat `portal/app/static/css/main.css` dengan Tailwind CSS (CDN atau build)
+    - Styling grid dashboard, kartu artikel, blur effect, dark/light mode
     - _Requirements: 1.1, 1.3, 4.2_
-  - [ ] 8.2 Buat `portal/app/static/js/search.js`
+  - [x] 8.2 Buat `portal/app/static/js/search.js`
     - Debounced AJAX live search (debounce 300ms, min 2 karakter)
     - _Requirements: 7.1, 7.2, 7.5, 7.6, 7.7_
-  - [ ] 8.3 Buat `portal/app/static/js/i18n.js`
+  - [x] 8.3 Buat `portal/app/static/js/i18n.js`
     - Language toggle: kirim POST /api/set-language, reload konten tanpa full page reload
     - _Requirements: 8.2, 8.3, 8.4_
+  - [x] 8.4 Buat `portal/app/static/js/theme.js`
+    - Dark/Light mode toggle dengan localStorage persistence
+    - Sun/Moon icon swap, transisi smooth antar tema
 
 - [ ] 9. Implementasi bilingual i18n (Flask-Babel)
   - Buat `portal/app/translations/en/messages.json` dan `portal/app/translations/id/messages.json`
@@ -145,10 +174,10 @@ Implementasi Flask full-stack web application dengan dua pilar konten (SAP & AWS
     - **Property 13: Seeder is idempotent**
     - **Validates: Requirements 9.7**
 
-- [ ] 11. Implementasi EC2 Scheduler Script (FinOps)
+- [ ] 11. Implementasi GCP Cloud Scheduler Script (FinOps)
   - Buat `portal/app/scripts/scheduler.py`
-  - Lambda handler yang membaca EC2_INSTANCE_ID dan ACTION dari env/event
-  - Logika start/stop dengan pengecekan state saat ini (idempotent)
+  - GCP Cloud Functions handler yang membaca GCP_INSTANCE_ID dan ACTION dari env/event
+  - Logika start/stop Compute Engine VM dengan pengecekan state saat ini (idempotent)
   - Logging dengan action, instance ID, dan timestamp
   - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5, 11.6_
   - [ ]* 11.1 Tulis property test untuk idempotency scheduler
@@ -174,4 +203,7 @@ Implementasi Flask full-stack web application dengan dua pilar konten (SAP & AWS
 - Checkpoint memastikan validasi inkremental di setiap fase
 - Property test memvalidasi properti kebenaran universal (menggunakan pytest-hypothesis)
 - Unit test memvalidasi contoh spesifik dan edge case
-- Database: SQLite lokal untuk development, PostgreSQL RDS untuk production (via `DATABASE_URL`)
+- Database: SQLite lokal untuk development, **GCP Cloud SQL PostgreSQL** untuk production (via `DATABASE_URL`)
+- Arsitektur: **GCP** (Compute Engine + Cloud SQL + Cloud Storage + Cloud Functions)
+- Taksonomi pilar: **ERP Systems** (SAP B1) dan **Cloud Computing Infrastructure** (Multi-Cloud GCP & Azure)
+- Standar kode: **PEP 8 + DRY + nama deskriptif + docstring Bahasa Indonesia**

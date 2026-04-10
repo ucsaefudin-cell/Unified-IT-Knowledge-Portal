@@ -14,35 +14,55 @@ main_bp = Blueprint("main", __name__)
 
 @main_bp.route("/")
 def dashboard():
-    """Tampilkan halaman dashboard utama dengan Bento Box/Grid layout."""
-    # Ambil beberapa artikel terbaru dari setiap pillar untuk preview
+    """
+    Tampilkan halaman dashboard utama dengan Bento Box/Grid layout.
+    Mengambil artikel dari kedua pillar (SAP dan GCP) untuk ditampilkan
+    sebagai preview card di halaman utama.
+    """
+    # Ambil 4 artikel terbaru dari pilar SAP untuk preview dashboard
     sap_articles = KnowledgeArticle.query.filter_by(pillar="SAP").limit(4).all()
-    aws_articles = KnowledgeArticle.query.filter_by(pillar="AWS").limit(4).all()
+    # Ambil 4 artikel terbaru dari pilar GCP untuk preview dashboard
+    gcp_articles = KnowledgeArticle.query.filter_by(pillar="GCP").limit(4).all()
+    # Ambil 3 best practice terbaru untuk ditampilkan di section gated
+    recent_bp = BestPractice.query.order_by(BestPractice.id.desc()).limit(3).all()
+    # Baca preferensi bahasa dari session, default ke English
+    lang = session.get("lang", "en")
     return render_template(
         "dashboard.html",
         sap_articles=sap_articles,
-        aws_articles=aws_articles,
+        gcp_articles=gcp_articles,
+        recent_bp=recent_bp,
+        is_authenticated=current_user.is_authenticated,
+        lang=lang,
     )
 
 
 @main_bp.route("/sap")
 def sap_pillar():
-    """Tampilkan semua Knowledge Article untuk pilar SAP Business One."""
-    # Ambil semua artikel SAP dari database, urutkan berdasarkan kategori topik
+    """
+    Tampilkan semua Knowledge Article untuk pilar SAP Business One.
+    Artikel dikelompokkan berdasarkan topic_category untuk tampilan yang rapi.
+    """
+    # Ambil semua artikel SAP, urutkan berdasarkan kategori topik
     articles = KnowledgeArticle.query.filter_by(pillar="SAP").order_by(
         KnowledgeArticle.topic_category
     ).all()
-    return render_template("sap/index.html", articles=articles)
+    lang = session.get("lang", "en")
+    return render_template("sap/index.html", articles=articles, lang=lang)
 
 
-@main_bp.route("/aws")
-def aws_pillar():
-    """Tampilkan semua Knowledge Article untuk pilar AWS Cloud Infrastructure."""
-    # Ambil semua artikel AWS dari database, urutkan berdasarkan kategori topik
-    articles = KnowledgeArticle.query.filter_by(pillar="AWS").order_by(
+@main_bp.route("/gcp")
+def gcp_pillar():
+    """
+    Tampilkan semua Knowledge Article untuk pilar GCP Cloud Infrastructure.
+    Menggantikan route /aws sesuai perubahan arsitektur ke Google Cloud Platform.
+    """
+    # Ambil semua artikel GCP, urutkan berdasarkan kategori topik
+    articles = KnowledgeArticle.query.filter_by(pillar="GCP").order_by(
         KnowledgeArticle.topic_category
     ).all()
-    return render_template("aws/index.html", articles=articles)
+    lang = session.get("lang", "en")
+    return render_template("gcp/index.html", articles=articles, lang=lang)
 
 
 @main_bp.route("/best-practices")
@@ -50,11 +70,14 @@ def best_practices():
     """
     Tampilkan daftar Best Practice.
     Guest hanya melihat judul dan teaser (dengan blur + lock icon).
-    User terautentikasi melihat konten penuh.
+    User terautentikasi melihat konten penuh tanpa blur.
+    Logika akses dikontrol di template menggunakan variabel is_authenticated.
     """
-    # Ambil semua best practice, urutkan berdasarkan pillar
-    practices = BestPractice.query.order_by(BestPractice.pillar).all()
-    # Tentukan bahasa yang dipilih dari session, default ke English
+    # Ambil semua best practice, urutkan berdasarkan pillar lalu id
+    practices = BestPractice.query.order_by(
+        BestPractice.pillar, BestPractice.id
+    ).all()
+    # Baca preferensi bahasa dari session, default ke English
     lang = session.get("lang", "en")
     return render_template(
         "best_practices/index.html",

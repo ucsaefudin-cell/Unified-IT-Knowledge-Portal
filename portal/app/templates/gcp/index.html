@@ -1,57 +1,53 @@
 {% extends "base.html" %}
-{% block title %}SAP Business One — Knowledge Base{% endblock %}
+{% block title %}GCP Cloud Infrastructure — Knowledge Base{% endblock %}
 
 {% block content %}
-<!-- Header halaman SAP dengan warna brand biru -->
-<div class="bg-gradient-to-r from-sap to-blue-700 text-white">
+<!-- Header halaman GCP dengan warna brand merah Google Cloud -->
+<div class="bg-gradient-to-r from-gcp to-orange-500 text-white">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <div class="flex items-center gap-4">
       <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
-        <span class="font-bold text-lg">SAP</span>
+        <span class="font-bold text-lg">GCP</span>
       </div>
       <div>
-        <h1 class="text-2xl md:text-3xl font-extrabold">SAP Business One</h1>
-        <p class="text-blue-100 text-sm mt-1"
-           data-en="ERP Knowledge Base — v10 and above"
-           data-id="Basis Pengetahuan ERP — v10 ke atas">
-          ERP Knowledge Base — v10 and above
+        <h1 class="text-2xl md:text-3xl font-extrabold">GCP Cloud Infrastructure</h1>
+        <p class="text-red-100 text-sm mt-1"
+           data-en="Google Cloud Platform — Modern Best Practices"
+           data-id="Google Cloud Platform — Praktik Terbaik Modern">
+          Google Cloud Platform — Modern Best Practices
         </p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Daftar artikel SAP — di-render dari database -->
+<!-- Daftar artikel GCP — di-render dari database -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
   {% if articles %}
-    <!-- Grid responsif: 1 kolom mobile, 2 tablet, 3 desktop -->
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
       {% for article in articles %}
-      <!-- Setiap artikel ditampilkan sebagai kartu infografis -->
       <div id="article-{{ article.id }}"
-           class="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md hover:border-sap/30 transition-all group">
-        <!-- Header kartu: badge kategori topik -->
+           class="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md hover:border-gcp/30 transition-all group">
         <div class="p-5 border-b border-gray-100">
-          <span class="inline-block text-xs font-semibold text-sap bg-sap-light px-2.5 py-1 rounded-full mb-3">
+          <!-- Badge kategori topik dengan warna GCP -->
+          <span class="inline-block text-xs font-semibold text-gcp bg-gcp-light px-2.5 py-1 rounded-full mb-3">
             {{ article.topic_category }}
           </span>
-          <h2 class="font-bold text-gray-900 text-base leading-snug group-hover:text-sap transition-colors">
+          <h2 class="font-bold text-gray-900 text-base leading-snug group-hover:text-gcp transition-colors">
             {{ article.title }}
           </h2>
           {% if article.summary %}
           <p class="text-sm text-gray-500 mt-2 leading-relaxed">{{ article.summary }}</p>
           {% endif %}
         </div>
-        <!-- Body kartu: konten artikel sesuai bahasa aktif -->
         <div class="p-5">
-          <!-- Gunakan method get_body() dari model untuk bilingual support -->
+          <!-- Konten artikel dengan bilingual support via get_body() -->
           <div class="prose prose-sm max-w-none text-gray-700 text-sm leading-relaxed article-body"
                data-body-en="{{ article.body_en }}"
                data-body-id="{{ article.body_id or article.body_en }}">
             {{ article.get_body(lang) }}
           </div>
         </div>
-        <!-- Footer kartu: timestamp -->
         <div class="px-5 pb-4">
           <p class="text-xs text-gray-400">
             <span data-en="Added" data-id="Ditambahkan">Added</span>:
@@ -62,11 +58,10 @@
       {% endfor %}
     </div>
   {% else %}
-    <!-- Pesan kosong jika tidak ada artikel SAP -->
     <div class="text-center py-20 text-gray-400">
-      <span class="text-5xl block mb-4">📋</span>
-      <p class="font-medium" data-en="No SAP articles available yet." data-id="Belum ada artikel SAP.">
-        No SAP articles available yet.
+      <span class="text-5xl block mb-4">☁️</span>
+      <p class="font-medium" data-en="No GCP articles available yet." data-id="Belum ada artikel GCP.">
+        No GCP articles available yet.
       </p>
     </div>
   {% endif %}

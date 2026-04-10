@@ -1,43 +1,212 @@
 {% extends "base.html" %}
-{% block title %}Best Practices — IT Knowledge Portal{% endblock %}
-{% block content %}
-<h1 class="text-3xl font-bold text-purple-800 mb-6">Best Practices & Case Studies</h1>
-{% for practice in practices %}
-<div class="bg-white border rounded-xl p-5 mb-4 shadow-sm">
-    <div class="flex items-center gap-2 mb-1">
-        <span class="text-xs font-medium uppercase
-            {% if practice.pillar == 'SAP' %}text-blue-500{% else %}text-orange-500{% endif %}">
-            {{ practice.pillar }}
-        </span>
-        {% if practice.case_study_ref %}
-            <span class="text-xs text-gray-400">{{ practice.case_study_ref }}</span>
-        {% endif %}
-    </div>
-    <h3 class="font-semibold text-lg">{{ practice.title }}</h3>
-    <p class="text-sm text-gray-600 mt-1">{{ practice.teaser }}</p>
+{% block title %}Best Practices — Unified IT Knowledge Portal{% endblock %}
 
-    {% if is_authenticated %}
-        <!-- Konten penuh untuk user terautentikasi -->
-        <div class="mt-3 text-sm text-gray-700">
-            {{ (practice.body_id if lang == 'id' and practice.body_id else practice.body_en) | safe }}
-        </div>
-    {% else %}
-        <!-- Konten diblur dengan lock icon untuk guest -->
-        <div class="mt-3 relative">
-            <div class="blur-sm select-none text-sm text-gray-700 pointer-events-none">
-                {{ practice.body_en[:200] }}...
-            </div>
-            <div class="absolute inset-0 flex items-center justify-center">
-                <span class="text-3xl">🔒</span>
-            </div>
-        </div>
-        <a href="{{ url_for('auth.register') }}"
-           class="mt-3 inline-block text-sm text-purple-600 font-medium">
-            Daftar untuk membaca selengkapnya →
+{% block content %}
+<!-- Header halaman Best Practices dengan warna ungu premium -->
+<div class="bg-gradient-to-r from-slate-800 to-slate-900 text-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-2xl">🔒</div>
+      <div>
+        <h1 class="text-2xl md:text-3xl font-extrabold"
+            data-en="Business Best Practices" data-id="Praktik Bisnis Terbaik">
+          Business Best Practices
+        </h1>
+        <p class="text-gray-400 text-sm mt-1"
+           data-en="Advanced case studies — SAP & GCP implementation guides"
+           data-id="Studi kasus lanjutan — Panduan implementasi SAP & GCP">
+          Advanced case studies — SAP &amp; GCP implementation guides
+        </p>
+      </div>
+    </div>
+
+    <!-- Banner status akses: berbeda untuk guest vs user login -->
+    {% if not is_authenticated %}
+    <div class="mt-6 flex items-center gap-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl px-4 py-3">
+      <span class="text-yellow-400 text-lg">⚠️</span>
+      <p class="text-yellow-200 text-sm">
+        <span data-en="You are viewing as a Guest. " data-id="Anda melihat sebagai Tamu. ">You are viewing as a Guest. </span>
+        <a href="{{ url_for('auth.register') }}" class="font-semibold underline hover:text-white">
+          <span data-en="Register free" data-id="Daftar gratis">Register free</span>
         </a>
+        <span data-en=" to unlock all content." data-id=" untuk membuka semua konten."> to unlock all content.</span>
+      </p>
+    </div>
+    {% else %}
+    <div class="mt-6 flex items-center gap-3 bg-green-500/10 border border-green-500/30 rounded-xl px-4 py-3">
+      <span class="text-green-400 text-lg">✓</span>
+      <p class="text-green-200 text-sm"
+         data-en="You have full access to all best practice content."
+         data-id="Anda memiliki akses penuh ke semua konten praktik terbaik.">
+        You have full access to all best practice content.
+      </p>
+    </div>
     {% endif %}
+  </div>
 </div>
-{% else %}
-    <p class="text-gray-400">Belum ada best practice tersedia.</p>
-{% endfor %}
+
+<!-- Daftar Best Practices -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+  <!-- Filter tab: All / SAP / GCP — filter dilakukan via JavaScript -->
+  <div class="flex items-center gap-2 mb-8 flex-wrap">
+    <button onclick="filterBP('all')" id="filter-all"
+            class="filter-btn active px-4 py-2 text-sm font-semibold rounded-lg transition-colors bg-slate-800 text-white">
+      <span data-en="All" data-id="Semua">All</span>
+    </button>
+    <button onclick="filterBP('SAP')" id="filter-sap"
+            class="filter-btn px-4 py-2 text-sm font-semibold rounded-lg transition-colors bg-gray-100 text-gray-600 hover:bg-sap-light hover:text-sap">
+      SAP Business One
+    </button>
+    <button onclick="filterBP('GCP')" id="filter-gcp"
+            class="filter-btn px-4 py-2 text-sm font-semibold rounded-lg transition-colors bg-gray-100 text-gray-600 hover:bg-gcp-light hover:text-gcp">
+      GCP Cloud
+    </button>
+  </div>
+
+  {% if practices %}
+    <div class="space-y-5" id="bp-list">
+      {% for bp in practices %}
+      <!-- Setiap best practice ditampilkan sebagai kartu horizontal -->
+      <div class="bp-card bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+           data-pillar="{{ bp.pillar }}">
+        <div class="p-5 md:p-6">
+
+          <!-- Header: badge pillar, referensi, dan judul -->
+          <div class="flex flex-wrap items-start gap-3 mb-3">
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0
+                         {% if bp.pillar == 'SAP' %}bg-sap-light text-sap{% else %}bg-gcp-light text-gcp{% endif %}">
+              {{ bp.pillar }}
+            </span>
+            {% if bp.case_study_ref %}
+            <span class="text-xs font-mono text-gray-400 bg-gray-100 px-2 py-1 rounded-md flex-shrink-0">
+              {{ bp.case_study_ref }}
+            </span>
+            {% endif %}
+          </div>
+
+          <!-- Judul — selalu ditampilkan ke semua pengunjung -->
+          <h2 class="text-lg font-bold text-gray-900 mb-3 leading-snug">{{ bp.title }}</h2>
+
+          <!-- Teaser — selalu ditampilkan ke semua pengunjung tanpa blur -->
+          <p class="text-sm text-gray-600 leading-relaxed mb-4">{{ bp.teaser }}</p>
+
+          <!-- ============================================
+               GATED CONTENT SECTION
+               Logika utama akses konten:
+               - Guest (is_authenticated = False):
+                 → Tampilkan preview teks yang diblur
+                 → Overlay dengan lock icon dan tombol register
+               - User login (is_authenticated = True):
+                 → Tampilkan konten penuh sesuai bahasa aktif
+               ============================================ -->
+          <div class="relative">
+            {% if is_authenticated %}
+              <!-- KONTEN PENUH — hanya untuk user yang sudah login dan terverifikasi -->
+              <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                <!-- Render konten sesuai bahasa aktif menggunakan get_body() -->
+                <div class="prose prose-sm max-w-none text-gray-700 text-sm leading-relaxed whitespace-pre-line bp-body"
+                     data-body-en="{{ bp.body_en }}"
+                     data-body-id="{{ bp.body_id or bp.body_en }}">
+                  {{ bp.get_body(lang) }}
+                </div>
+              </div>
+            {% else %}
+              <!-- PREVIEW DIBLUR — untuk guest yang belum login -->
+              <!-- Teks di bawah ini sengaja diblur sebagai efek visual -->
+              <div class="bg-gray-50 rounded-xl p-4 border border-gray-200 relative overflow-hidden">
+                <div class="blur-sm select-none text-sm text-gray-600 leading-relaxed pointer-events-none">
+                  Step 1: Access the administration panel and navigate to the configuration
+                  section. Step 2: Set the required parameters according to your business
+                  requirements. Step 3: Validate the setup by running the diagnostic tool.
+                  Step 4: Apply the changes and monitor the system for 24 hours to ensure
+                  stability. Step 5: Document the configuration for future reference...
+                </div>
+
+                <!-- Overlay lock — posisi absolute di atas konten yang diblur -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center bg-white/85 backdrop-blur-sm">
+                  <div class="text-center px-4">
+                    <span class="text-3xl block mb-2">🔒</span>
+                    <p class="text-sm font-semibold text-gray-800 mb-1"
+                       data-en="Members Only Content"
+                       data-id="Konten Khusus Member">Members Only Content</p>
+                    <p class="text-xs text-gray-500 mb-4"
+                       data-en="Create a free account to read the full implementation guide"
+                       data-id="Buat akun gratis untuk membaca panduan implementasi lengkap">
+                      Create a free account to read the full implementation guide
+                    </p>
+                    <div class="flex items-center justify-center gap-2">
+                      <a href="{{ url_for('auth.register') }}"
+                         class="px-4 py-2 text-xs font-semibold text-white bg-sap hover:bg-sap-dark rounded-lg transition-colors">
+                        <span data-en="Register Free" data-id="Daftar Gratis">Register Free</span>
+                      </a>
+                      <a href="{{ url_for('auth.login') }}"
+                         class="px-4 py-2 text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                        <span data-en="Login" data-id="Masuk">Login</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Footer kartu: timestamp -->
+          <p class="text-xs text-gray-400 mt-3">
+            <span data-en="Published" data-id="Diterbitkan">Published</span>:
+            {{ bp.created_at.strftime('%d %B %Y') }}
+          </p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center py-20 text-gray-400">
+      <span class="text-5xl block mb-4">📚</span>
+      <p data-en="No best practices available yet." data-id="Belum ada praktik terbaik.">
+        No best practices available yet.
+      </p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  /**
+   * Fungsi filter best practice berdasarkan pillar (SAP/GCP/All).
+   * Bekerja secara client-side tanpa reload halaman.
+   * @param {string} pillar - 'all', 'SAP', atau 'GCP'
+   */
+  function filterBP(pillar) {
+    // Ambil semua kartu best practice
+    const cards = document.querySelectorAll('.bp-card');
+    // Ambil semua tombol filter untuk update styling aktif
+    const buttons = document.querySelectorAll('.filter-btn');
+
+    // Update tampilan setiap kartu: tampilkan atau sembunyikan
+    cards.forEach(card => {
+      if (pillar === 'all' || card.dataset.pillar === pillar) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Update styling tombol filter: tandai tombol yang aktif
+    buttons.forEach(btn => {
+      btn.classList.remove('active', 'bg-slate-800', 'text-white', 'bg-sap-light', 'text-sap', 'bg-gcp-light', 'text-gcp');
+      btn.classList.add('bg-gray-100', 'text-gray-600');
+    });
+
+    // Berikan styling aktif ke tombol yang diklik
+    const activeBtn = document.getElementById('filter-' + pillar.toLowerCase());
+    if (activeBtn) {
+      activeBtn.classList.remove('bg-gray-100', 'text-gray-600');
+      if (pillar === 'all') activeBtn.classList.add('bg-slate-800', 'text-white');
+      else if (pillar === 'SAP') activeBtn.classList.add('bg-sap-light', 'text-sap');
+      else activeBtn.classList.add('bg-gcp-light', 'text-gcp');
+    }
+  }
+</script>
 {% endblock %}

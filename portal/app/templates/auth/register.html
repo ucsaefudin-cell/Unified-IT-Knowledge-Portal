@@ -1,26 +1,68 @@
 {% extends "base.html" %}
-{% block title %}Daftar — IT Knowledge Portal{% endblock %}
+{% block title %}Register — Unified IT Knowledge Portal{% endblock %}
+
 {% block content %}
-<div class="max-w-md mx-auto bg-white border rounded-xl p-8 shadow-sm">
-    <h2 class="text-2xl font-bold mb-6">Buat Akun Baru</h2>
-    <form method="POST" action="{{ url_for('auth.register') }}">
-        <div class="mb-4">
-            <label class="block text-sm font-medium mb-1">Email</label>
-            <input type="email" name="email" required
-                   class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+<div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
+  <div class="w-full max-w-md">
+
+    <!-- Header form register -->
+    <div class="text-center mb-8">
+      <div class="w-14 h-14 bg-gradient-to-br from-sap to-gcp rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+        <span class="text-white font-bold text-lg">IT</span>
+      </div>
+      <h1 class="text-2xl font-extrabold text-gray-900"
+          data-en="Create Free Account" data-id="Buat Akun Gratis">Create Free Account</h1>
+      <p class="text-gray-500 text-sm mt-1"
+         data-en="Unlock all SAP & GCP best practice guides"
+         data-id="Buka semua panduan praktik terbaik SAP & GCP">
+        Unlock all SAP &amp; GCP best practice guides
+      </p>
+    </div>
+
+    <!-- Form registrasi -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+      <form method="POST" action="{{ url_for('auth.handle_registration_form') }}" class="space-y-5">
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5"
+                 data-en="Email Address" data-id="Alamat Email">Email Address</label>
+          <input type="email" name="email" required
+                 class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sap/30 focus:border-sap transition-colors"
+                 placeholder="you@example.com" />
         </div>
-        <div class="mb-4">
-            <label class="block text-sm font-medium mb-1">Password (min. 8 karakter)</label>
-            <input type="password" name="password" required minlength="8"
-                   class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5"
+                 data-en="Password (min. 8 characters)" data-id="Kata Sandi (min. 8 karakter)">
+            Password (min. 8 characters)
+          </label>
+          <input type="password" name="password" required minlength="8"
+                 class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sap/30 focus:border-sap transition-colors"
+                 placeholder="••••••••" />
         </div>
+
         <button type="submit"
-                class="w-full bg-blue-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-blue-700">
-            Daftar
+                class="w-full py-2.5 bg-sap hover:bg-sap-dark text-white text-sm font-semibold rounded-lg transition-colors shadow-sm">
+          <span data-en="Create Account" data-id="Buat Akun">Create Account</span>
         </button>
-    </form>
-    <p class="mt-4 text-sm text-center text-gray-500">
-        Sudah punya akun? <a href="{{ url_for('auth.login') }}" class="text-blue-600">Login</a>
-    </p>
+      </form>
+
+      <!-- Info verifikasi email -->
+      <div class="mt-5 p-3 bg-blue-50 rounded-lg border border-blue-100">
+        <p class="text-xs text-blue-700 text-center"
+           data-en="A verification email will be sent to activate your account."
+           data-id="Email verifikasi akan dikirim untuk mengaktifkan akun Anda.">
+          A verification email will be sent to activate your account.
+        </p>
+      </div>
+
+      <p class="text-center text-sm text-gray-500 mt-4">
+        <span data-en="Already have an account?" data-id="Sudah punya akun?">Already have an account?</span>
+        <a href="{{ url_for('auth.handle_login_form') }}" class="text-sap font-semibold hover:underline ml-1">
+          <span data-en="Login" data-id="Masuk">Login</span>
+        </a>
+      </p>
+    </div>
+  </div>
 </div>
 {% endblock %}

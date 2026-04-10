@@ -1,42 +1,542 @@
 {% extends "base.html" %}
-{% block title %}Dashboard — IT Knowledge Portal{% endblock %}
+
+{% block title %}Dashboard — Unified IT Knowledge Portal{% endblock %}
 
 {% block content %}
-<!-- Bento Box/Grid dashboard utama -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-    <!-- Kartu Pillar SAP Business One -->
-    <a href="{{ url_for('main.sap_pillar') }}"
-       class="block bg-blue-50 border border-blue-200 rounded-2xl p-6 hover:shadow-lg transition">
-        <h2 class="text-2xl font-bold text-blue-800 mb-2">SAP Business One</h2>
-        <p class="text-blue-600 text-sm mb-4">Master Data · Purchasing · Sales · Inventory</p>
-        <span class="text-blue-500 text-sm font-medium">Jelajahi Artikel →</span>
-    </a>
+<!-- ============================================================
+     HERO SECTION — Banner utama halaman dashboard
+     Menampilkan judul portal dan deskripsi singkat dua pilar
+     ============================================================ -->
+<section class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+    <div class="text-center max-w-3xl mx-auto">
 
-    <!-- Kartu Pillar AWS Cloud Infrastructure -->
-    <a href="{{ url_for('main.aws_pillar') }}"
-       class="block bg-orange-50 border border-orange-200 rounded-2xl p-6 hover:shadow-lg transition">
-        <h2 class="text-2xl font-bold text-orange-800 mb-2">AWS Cloud Infrastructure</h2>
-        <p class="text-orange-600 text-sm mb-4">EC2 · S3 · RDS · CloudFront</p>
-        <span class="text-orange-500 text-sm font-medium">Jelajahi Artikel →</span>
-    </a>
+      <!-- Badge label portal -->
+      <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-medium text-gray-300 mb-6 border border-white/20">
+        <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+        <span data-en="Knowledge Base — Live" data-id="Basis Pengetahuan — Aktif">Knowledge Base — Live</span>
+      </span>
 
-    <!-- Kartu Best Practices (gated) -->
-    <a href="{{ url_for('main.best_practices') }}"
-       class="block bg-purple-50 border border-purple-200 rounded-2xl p-6 hover:shadow-lg transition md:col-span-2">
-        <h2 class="text-2xl font-bold text-purple-800 mb-2">🔒 Best Practices & Case Studies</h2>
-        <p class="text-purple-600 text-sm mb-4">
-            Skenario lanjutan dan studi kasus eksklusif untuk member terdaftar.
+      <!-- Judul utama dengan gradient teks -->
+      <h1 class="text-3xl md:text-5xl font-extrabold leading-tight mb-4">
+        <span data-en="Unified IT" data-id="Portal IT">Unified IT</span>
+        <span class="bg-gradient-to-r from-blue-400 to-red-400 bg-clip-text text-transparent"> Knowledge Portal</span>
+      </h1>
+
+      <!-- Deskripsi singkat portal -->
+      <p class="text-gray-400 text-base md:text-lg leading-relaxed mb-8"
+         data-en="Your centralized reference for Enterprise Resource Planning and Cloud Computing infrastructure — featuring deep-dives into SAP Business One and Multi-Cloud strategies (Azure &amp; GCP)."
+         data-id="Referensi terpusat untuk Enterprise Resource Planning dan infrastruktur Cloud Computing — menampilkan pembahasan mendalam tentang SAP Business One dan strategi Multi-Cloud (Azure &amp; GCP).">
+        Your centralized reference for Enterprise Resource Planning and Cloud Computing infrastructure — featuring deep-dives into SAP Business One and Multi-Cloud strategies (Azure &amp; GCP).
+      </p>
+
+      <!-- Tombol CTA utama -->
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <a href="{{ url_for('main.sap_pillar') }}"
+           class="px-5 py-2.5 bg-sap hover:bg-sap-dark text-white text-sm font-semibold rounded-lg transition-colors shadow-lg shadow-blue-900/30">
+          <span data-en="Explore ERP" data-id="Jelajahi ERP">Explore ERP</span>
+        </a>
+        <a href="{{ url_for('main.gcp_pillar') }}"
+           class="px-5 py-2.5 bg-gcp hover:bg-gcp-dark text-white text-sm font-semibold rounded-lg transition-colors shadow-lg shadow-red-900/30">
+          <span data-en="Explore Cloud" data-id="Jelajahi Cloud">Explore Cloud</span>
+        </a>
+        <!-- Tombol Best Practices — gated content -->
+        <a href="{{ url_for('main.best_practices') }}"
+           class="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white text-sm font-semibold rounded-lg transition-colors border border-white/20">
+          <span data-en="Best Practices 🔒" data-id="Praktik Terbaik 🔒">Best Practices 🔒</span>
+        </a>
+        <!-- Tombol Troubleshooting & Solutions — gated content -->
+        <a href="{{ url_for('main.best_practices') }}?type=troubleshooting"
+           class="px-5 py-2.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-sm font-semibold rounded-lg transition-colors border border-amber-500/30">
+          <span data-en="Troubleshooting &amp; Solutions 🔒" data-id="Pemecahan Masalah 🔒">Troubleshooting &amp; Solutions 🔒</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     BENTO GRID DASHBOARD — Layout utama dua pilar
+     Menggunakan CSS Grid responsif: 1 kolom di mobile, 2 di desktop
+     Data artikel di-render otomatis dari database via Jinja2 loop
+     ============================================================ -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- Label section -->
+  <div class="flex items-center gap-3 mb-8">
+    <h2 class="text-xl font-bold text-gray-900"
+        data-en="Knowledge Base" data-id="Basis Pengetahuan">Knowledge Base</h2>
+    <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full"
+          data-en="Public — No login required"
+          data-id="Publik — Tidak perlu login">Public — No login required</span>
+  </div>
+
+  <!-- Grid dua kolom: SAP (kiri) dan GCP (kanan) -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- ==========================================
+         KARTU PILAR SAP BUSINESS ONE
+         ========================================== -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+
+            <!-- Header kartu ERP/SAP dengan warna brand biru -->
+      <div class="bg-gradient-to-r from-sap to-blue-600 p-5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <!-- Ikon pilar ERP -->
+            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+              <span class="text-white font-bold text-sm">ERP</span>
+            </div>
+            <div>
+              <!-- Judul kartu kiri: Enterprise Resource Planning (ERP) -->
+              <h3 class="text-white font-bold text-lg leading-tight">Enterprise Resource Planning (ERP)</h3>
+              <!-- Subjudul kartu kiri: Featured SAP Business One Modules -->
+              <p class="text-blue-100 text-xs"
+                 data-en="Featured: SAP Business One Modules"
+                 data-id="Unggulan: Modul SAP Business One">Featured: SAP Business One Modules</p>
+            </div>
+          </div>
+          <!-- Badge jumlah artikel -->
+          <span class="bg-white/20 text-white text-xs font-medium px-2.5 py-1 rounded-full">
+            {{ sap_articles|length }}
+            <span data-en="articles" data-id="artikel">articles</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Daftar artikel SAP — di-render dari database -->
+      <div class="p-4 space-y-2">
+        {% if sap_articles %}
+          {% for article in sap_articles %}
+          <!-- Setiap artikel ditampilkan sebagai baris kartu kecil -->
+          <a href="{{ url_for('main.sap_pillar') }}#article-{{ article.id }}"
+             class="flex items-start gap-3 p-3 rounded-xl hover:bg-sap-light group transition-colors">
+            <!-- Ikon kategori topik -->
+            <div class="w-8 h-8 bg-sap-light rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-sap/20 transition-colors">
+              <span class="text-sap text-xs font-bold">{{ article.topic_category[:2].upper() }}</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-gray-800 truncate group-hover:text-sap transition-colors">
+                {{ article.title }}
+              </p>
+              <!-- Tampilkan summary jika ada, fallback ke 80 karakter pertama body -->
+              <p class="text-xs text-gray-500 mt-0.5 line-clamp-1">
+                {{ article.summary or article.body_en[:80] }}...
+              </p>
+            </div>
+            <!-- Panah navigasi -->
+            <svg class="w-4 h-4 text-gray-300 group-hover:text-sap flex-shrink-0 mt-0.5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+          {% endfor %}
+        {% else %}
+          <!-- Tampilkan pesan jika tidak ada artikel SAP di database -->
+          <div class="text-center py-8 text-gray-400">
+            <p class="text-sm" data-en="No SAP articles available yet." data-id="Belum ada artikel SAP.">
+              No SAP articles available yet.
+            </p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Footer kartu kiri: link ke halaman ERP/SAP -->
+      <div class="px-4 pb-4">
+        <a href="{{ url_for('main.sap_pillar') }}"
+           class="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-semibold text-sap bg-sap-light hover:bg-sap hover:text-white rounded-xl transition-colors">
+          <span data-en="View All ERP Articles" data-id="Lihat Semua Artikel ERP">View All ERP Articles</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         KARTU PILAR GCP CLOUD INFRASTRUCTURE
+         ========================================== -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+
+      <!-- Header kartu Cloud Infrastructure dengan warna brand oranye/merah -->
+      <div class="bg-gradient-to-r from-gcp to-orange-500 p-5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <!-- Ikon pilar Cloud Infrastructure -->
+            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+              <span class="text-white font-bold text-sm">☁️</span>
+            </div>
+            <div>
+              <!-- Judul kartu kanan: Cloud Computing Infrastructure -->
+              <h3 class="text-white font-bold text-lg leading-tight">Cloud Computing Infrastructure</h3>
+              <!-- Subjudul kartu kanan: Multi-Cloud expertise -->
+              <p class="text-red-100 text-xs"
+                 data-en="Expertise: Multi-Cloud (GCP &amp; Azure)"
+                 data-id="Keahlian: Multi-Cloud (GCP &amp; Azure)">Expertise: Multi-Cloud (GCP &amp; Azure)</p>
+            </div>
+          </div>
+          <!-- Badge jumlah artikel -->
+          <span class="bg-white/20 text-white text-xs font-medium px-2.5 py-1 rounded-full">
+            {{ gcp_articles|length }}
+            <span data-en="articles" data-id="artikel">articles</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Daftar artikel GCP — di-render dari database -->
+      <div class="p-4 space-y-2">
+        {% if gcp_articles %}
+          {% for article in gcp_articles %}
+          <a href="{{ url_for('main.gcp_pillar') }}#article-{{ article.id }}"
+             class="flex items-start gap-3 p-3 rounded-xl hover:bg-gcp-light group transition-colors">
+            <div class="w-8 h-8 bg-gcp-light rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-gcp/20 transition-colors">
+              <span class="text-gcp text-xs font-bold">{{ article.topic_category[:2].upper() }}</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-gray-800 truncate group-hover:text-gcp transition-colors">
+                {{ article.title }}
+              </p>
+              <p class="text-xs text-gray-500 mt-0.5 line-clamp-1">
+                {{ article.summary or article.body_en[:80] }}...
+              </p>
+            </div>
+            <svg class="w-4 h-4 text-gray-300 group-hover:text-gcp flex-shrink-0 mt-0.5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+          {% endfor %}
+        {% else %}
+          <div class="text-center py-8 text-gray-400">
+            <p class="text-sm" data-en="No GCP articles available yet." data-id="Belum ada artikel GCP.">
+              No GCP articles available yet.
+            </p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Footer kartu kanan: link ke halaman Cloud Infrastructure -->
+      <div class="px-4 pb-4">
+        <a href="{{ url_for('main.gcp_pillar') }}"
+           class="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-semibold text-gcp bg-gcp-light hover:bg-gcp hover:text-white rounded-xl transition-colors">
+          <span data-en="View All Cloud Articles" data-id="Lihat Semua Artikel Cloud">View All Cloud Articles</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION BEST PRACTICES — Konten Gated (Terkunci untuk Guest)
+     Menampilkan preview 3 best practice terbaru dengan teaser logic:
+     - Guest: judul + teaser + blur overlay + lock icon
+     - User login: judul + teaser (link ke halaman penuh)
+     ============================================================ -->
+<section class="bg-gradient-to-b from-gray-50 to-white py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Header section Best Practices -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xl">🔒</span>
+          <h2 class="text-xl font-bold text-gray-900"
+              data-en="Business Best Practices" data-id="Praktik Bisnis Terbaik">Business Best Practices</h2>
+        </div>
+        <p class="text-sm text-gray-500"
+           data-en="Advanced case studies — Register to unlock full content"
+           data-id="Studi kasus lanjutan — Daftar untuk membuka konten penuh">
+          Advanced case studies — Register to unlock full content
         </p>
-        <span class="text-purple-500 text-sm font-medium">Lihat Semua →</span>
-    </a>
+      </div>
+      <a href="{{ url_for('main.best_practices') }}"
+         class="flex-shrink-0 px-4 py-2 text-sm font-semibold text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
+        <span data-en="View All" data-id="Lihat Semua">View All</span> →
+      </a>
+    </div>
 
-</div>
+    <!-- Grid 3 kartu Best Practice -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      {% if recent_bp %}
+        {% for bp in recent_bp %}
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
 
-<!-- Search bar global -->
-<div class="mt-8">
-    <input id="search-input" type="text" placeholder="Cari artikel..."
-           class="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
-    <div id="search-results" class="mt-2 hidden bg-white border rounded-xl shadow-md p-4"></div>
-</div>
+          <!-- Header kartu: badge pillar dan referensi studi kasus -->
+          <div class="p-4 border-b border-gray-100">
+            <div class="flex items-center justify-between mb-3">
+              <!-- Badge pillar: warna berbeda untuk SAP vs GCP -->
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-full
+                           {% if bp.pillar == 'SAP' %}bg-sap-light text-sap{% else %}bg-gcp-light text-gcp{% endif %}">
+                {{ bp.pillar }}
+              </span>
+              <!-- Referensi kode studi kasus jika ada -->
+              {% if bp.case_study_ref %}
+              <span class="text-xs text-gray-400 font-mono">{{ bp.case_study_ref }}</span>
+              {% endif %}
+            </div>
+            <!-- Judul best practice — selalu ditampilkan ke semua pengunjung -->
+            <h3 class="font-semibold text-gray-900 text-sm leading-snug">{{ bp.title }}</h3>
+          </div>
+
+          <!-- Body kartu: teaser + blur logic -->
+          <div class="p-4">
+            <!-- Teaser — ditampilkan ke semua pengunjung tanpa blur -->
+            <p class="text-xs text-gray-600 leading-relaxed mb-3">{{ bp.teaser }}</p>
+
+            <!-- ============================================
+                 GATED CONTENT AREA
+                 Logika akses dikontrol di sini:
+                 - is_authenticated = True  → tampilkan link "Read More"
+                 - is_authenticated = False → tampilkan blur overlay + CTA login
+                 ============================================ -->
+            <div class="relative">
+              <!-- Preview konten yang diblur — selalu ada teks dummy untuk efek visual -->
+              <div class="gated-preview text-xs text-gray-400 leading-relaxed
+                          {% if not is_authenticated %}blur-sm select-none{% endif %}">
+                <!-- Teks ini sengaja diblur untuk guest — hanya efek visual -->
+                Step 1: Configure the system settings... Step 2: Navigate to the
+                administration panel and set the required parameters for optimal
+                performance. Step 3: Validate the configuration by running...
+              </div>
+
+              {% if not is_authenticated %}
+              <!-- OVERLAY LOCK — ditampilkan hanya untuk guest yang belum login -->
+              <div class="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm rounded-lg">
+                <span class="text-2xl mb-2">🔒</span>
+                <p class="text-xs font-semibold text-gray-700 text-center mb-3"
+                   data-en="Login to unlock full content"
+                   data-id="Login untuk membuka konten penuh">
+                  Login to unlock full content
+                </p>
+                <!-- Tombol CTA: arahkan ke halaman register -->
+                <a href="{{ url_for('auth.handle_registration_form') }}"
+                   class="px-3 py-1.5 text-xs font-semibold text-white bg-sap hover:bg-sap-dark rounded-lg transition-colors">
+                  <span data-en="Register Free" data-id="Daftar Gratis">Register Free</span>
+                </a>
+              </div>
+              {% else %}
+              <!-- LINK READ MORE — hanya untuk user yang sudah login -->
+              <a href="{{ url_for('main.best_practices') }}"
+                 class="inline-flex items-center gap-1 text-xs font-semibold text-purple-600 hover:text-purple-800 mt-2">
+                <span data-en="Read full guide" data-id="Baca panduan lengkap">Read full guide</span>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <!-- Pesan jika belum ada best practice di database -->
+        <div class="col-span-3 text-center py-12 text-gray-400">
+          <span class="text-4xl block mb-3">📚</span>
+          <p data-en="Best practices coming soon." data-id="Praktik terbaik segera hadir.">
+            Best practices coming soon.
+          </p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- CTA Banner untuk guest — ajakan register -->
+    {% if not is_authenticated %}
+    <div class="mt-8 bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-6 md:p-8 text-center">
+      <h3 class="text-white font-bold text-lg mb-2"
+          data-en="Unlock All Best Practices" data-id="Buka Semua Praktik Terbaik">
+        Unlock All Best Practices
+      </h3>
+      <p class="text-gray-400 text-sm mb-5"
+         data-en="Create a free account to access detailed SAP & GCP implementation guides, case studies, and troubleshooting playbooks."
+         data-id="Buat akun gratis untuk mengakses panduan implementasi SAP & GCP, studi kasus, dan panduan troubleshooting secara detail.">
+        Create a free account to access detailed SAP &amp; GCP implementation guides, case studies, and troubleshooting playbooks.
+      </p>
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <a href="{{ url_for('auth.handle_registration_form') }}"
+           class="px-6 py-2.5 bg-sap hover:bg-sap-dark text-white text-sm font-semibold rounded-lg transition-colors shadow-lg">
+          <span data-en="Create Free Account" data-id="Buat Akun Gratis">Create Free Account</span>
+        </a>
+        <a href="{{ url_for('auth.handle_login_form') }}"
+           class="px-6 py-2.5 bg-white/10 hover:bg-white/20 text-white text-sm font-semibold rounded-lg transition-colors border border-white/20">
+          <span data-en="Already have an account? Login" data-id="Sudah punya akun? Masuk">Already have an account? Login</span>
+        </a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION PLACEHOLDER KONTEN BARU
+     Menampilkan preview konten ERP & Cloud yang akan datang:
+     - Proactive: Best Practices (pencegahan & optimasi)
+     - Reactive: Troubleshooting & Solutions (pemecahan masalah)
+     Semua konten ini bersifat gated — memerlukan login
+     ============================================================ -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14">
+
+  <!-- Grid dua kolom: Proactive (kiri) dan Reactive (kanan) -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <!-- ==========================================
+         KOLOM KIRI — Proactive Best Practices
+         Konten pencegahan dan optimasi sistem
+         ========================================== -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <!-- Header kolom dengan warna ungu premium -->
+      <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-4">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">
+            <span class="text-lg">✅</span>
+          </div>
+          <div>
+            <h3 class="text-white font-bold text-base"
+                data-en="Proactive Best Practices"
+                data-id="Praktik Terbaik Proaktif">Proactive Best Practices</h3>
+            <p class="text-purple-200 text-xs"
+               data-en="Prevention &amp; Optimization guides"
+               data-id="Panduan pencegahan &amp; optimasi">Prevention &amp; Optimization guides</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Daftar placeholder konten proaktif -->
+      <div class="p-4 space-y-3">
+
+        <!-- Placeholder 1: GCP Cloud SQL Backup -->
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100 relative overflow-hidden">
+          <span class="text-purple-500 text-lg flex-shrink-0">☁️</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-xs font-semibold text-gcp bg-gcp-light px-2 py-0.5 rounded-full">GCP</span>
+              <span class="text-xs text-gray-400 font-mono">GCP-BP-01</span>
+            </div>
+            <p class="text-sm font-semibold text-gray-800 leading-snug">
+              Automated Backup Strategies for GCP Cloud SQL
+            </p>
+            <p class="text-xs text-gray-500 mt-1 line-clamp-2">
+              Configure automated backups, PITR, and export to Cloud Storage for disaster recovery.
+            </p>
+          </div>
+          <!-- Lock overlay untuk konten gated -->
+          {% if not is_authenticated %}
+          <div class="absolute inset-0 flex items-center justify-end pr-3 bg-gradient-to-l from-white/90 via-white/60 to-transparent">
+            <a href="{{ url_for('auth.handle_registration_form') }}"
+               class="flex items-center gap-1 text-xs font-semibold text-sap bg-sap-light px-2.5 py-1.5 rounded-lg hover:bg-sap hover:text-white transition-colors flex-shrink-0">
+              🔒 <span data-en="Unlock" data-id="Buka">Unlock</span>
+            </a>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Placeholder 2: SAP Master Data Standardization -->
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100 relative overflow-hidden">
+          <span class="text-blue-500 text-lg flex-shrink-0">🗂️</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-xs font-semibold text-sap bg-sap-light px-2 py-0.5 rounded-full">SAP</span>
+              <span class="text-xs text-gray-400 font-mono">SAP-BP-01</span>
+            </div>
+            <p class="text-sm font-semibold text-gray-800 leading-snug">
+              Master Data Standardization in SAP Business One
+            </p>
+            <p class="text-xs text-gray-500 mt-1 line-clamp-2">
+              Best practices for Business Partner, Item Master, and Chart of Accounts governance.
+            </p>
+          </div>
+          {% if not is_authenticated %}
+          <div class="absolute inset-0 flex items-center justify-end pr-3 bg-gradient-to-l from-white/90 via-white/60 to-transparent">
+            <a href="{{ url_for('auth.handle_registration_form') }}"
+               class="flex items-center gap-1 text-xs font-semibold text-sap bg-sap-light px-2.5 py-1.5 rounded-lg hover:bg-sap hover:text-white transition-colors flex-shrink-0">
+              🔒 <span data-en="Unlock" data-id="Buka">Unlock</span>
+            </a>
+          </div>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==========================================
+         KOLOM KANAN — Reactive Troubleshooting
+         Konten pemecahan masalah dan solusi teknis
+         ========================================== -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <!-- Header kolom dengan warna amber/oranye untuk troubleshooting -->
+      <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-4">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">
+            <span class="text-lg">🔧</span>
+          </div>
+          <div>
+            <h3 class="text-white font-bold text-base"
+                data-en="Troubleshooting &amp; Solutions"
+                data-id="Pemecahan Masalah &amp; Solusi">Troubleshooting &amp; Solutions</h3>
+            <p class="text-amber-100 text-xs"
+               data-en="Reactive fixes for real-world issues"
+               data-id="Solusi reaktif untuk masalah nyata">Reactive fixes for real-world issues</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Daftar placeholder konten troubleshooting -->
+      <div class="p-4 space-y-3">
+
+        <!-- Placeholder 3: GCP PostgreSQL Connection Timeout -->
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100 relative overflow-hidden">
+          <span class="text-red-500 text-lg flex-shrink-0">🔌</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-xs font-semibold text-gcp bg-gcp-light px-2 py-0.5 rounded-full">GCP</span>
+              <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Fix</span>
+            </div>
+            <p class="text-sm font-semibold text-gray-800 leading-snug">
+              Resolving PostgreSQL Connection Timeout in GCP (IP Whitelisting)
+            </p>
+            <p class="text-xs text-gray-500 mt-1 line-clamp-2">
+              Step-by-step guide to diagnose and fix connection refused errors via Authorized Networks.
+            </p>
+          </div>
+          {% if not is_authenticated %}
+          <div class="absolute inset-0 flex items-center justify-end pr-3 bg-gradient-to-l from-white/90 via-white/60 to-transparent">
+            <a href="{{ url_for('auth.handle_registration_form') }}"
+               class="flex items-center gap-1 text-xs font-semibold text-sap bg-sap-light px-2.5 py-1.5 rounded-lg hover:bg-sap hover:text-white transition-colors flex-shrink-0">
+              🔒 <span data-en="Unlock" data-id="Buka">Unlock</span>
+            </a>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Placeholder 4: SAP License Server Connection Failed -->
+        <div class="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100 relative overflow-hidden">
+          <span class="text-blue-500 text-lg flex-shrink-0">🔑</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-xs font-semibold text-sap bg-sap-light px-2 py-0.5 rounded-full">SAP</span>
+              <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Fix</span>
+            </div>
+            <p class="text-sm font-semibold text-gray-800 leading-snug">
+              Fixing 'License Server Connection Failed' in SAP Client
+            </p>
+            <p class="text-xs text-gray-500 mt-1 line-clamp-2">
+              Diagnose and resolve SAP B1 license server errors — firewall, service, and registry fixes.
+            </p>
+          </div>
+          {% if not is_authenticated %}
+          <div class="absolute inset-0 flex items-center justify-end pr-3 bg-gradient-to-l from-white/90 via-white/60 to-transparent">
+            <a href="{{ url_for('auth.handle_registration_form') }}"
+               class="flex items-center gap-1 text-xs font-semibold text-sap bg-sap-light px-2.5 py-1.5 rounded-lg hover:bg-sap hover:text-white transition-colors flex-shrink-0">
+              🔒 <span data-en="Unlock" data-id="Buka">Unlock</span>
+            </a>
+          </div>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
 {% endblock %}

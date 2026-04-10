@@ -1,20 +1,17 @@
-"""
-Modul __init__.py — Application Factory Unified IT Knowledge Portal.
+﻿"""
+Modul __init__.py -- Application Factory Unified IT Knowledge Portal.
 
-Menggunakan pola Application Factory agar:
-- Mudah dikonfigurasi untuk berbagai lingkungan (dev, test, production)
-- Mendukung multiple app instances untuk testing
-- Semua ekstensi diinisialisasi di satu tempat
+Menggunakan pola Application Factory agar mudah dikonfigurasi
+untuk berbagai lingkungan (dev, test, production).
 
-Security extensions yang diinisialisasi di sini:
+Security extensions:
 - Flask-WTF (CSRFProtect): Proteksi CSRF untuk semua form POST
-- Flask-Talisman: Security headers (HSTS, CSP, X-Frame-Options, dll)
-- Flask-Limiter: Rate limiting untuk mencegah brute-force attack
+- Flask-Talisman: Security headers (production only)
+- Flask-Limiter: Rate limiting untuk mencegah brute-force
 
 Prinsip Clean Code:
-- Fungsi create_app() adalah satu-satunya entry point pembuatan app
+- create_app() adalah satu-satunya entry point pembuatan app
 - Setiap kelompok inisialisasi dipisahkan ke fungsi privat tersendiri
-- Nama fungsi deskriptif: _initialize_extensions, _register_blueprints, dll
 """
 
 from flask import Flask
@@ -28,58 +25,77 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 # ============================================================
-# INISIALISASI EKSTENSI — Tanpa mengikat ke app instance tertentu
-# Pola ini disebut "lazy initialization" — ekstensi baru aktif
-# setelah init_app(app) dipanggil di dalam create_app()
+# INISIALISASI EKSTENSI -- Lazy initialization (tanpa app)
+# Ekstensi baru aktif setelah init_app(app) dipanggil
 # ============================================================
 
-# ORM database — mengelola semua interaksi dengan PostgreSQL/SQLite
+# ORM database
 db = SQLAlchemy()
 
-# Migrasi skema database — mengelola perubahan struktur tabel
+# Migrasi skema database
 migrate = Migrate()
 
-# Manajemen session login — melacak user yang sedang aktif
+# Manajemen session login
 login_manager = LoginManager()
 
-# Pengiriman email — untuk notifikasi dan verifikasi (implementasi nanti)
+# Pengiriman email
 mail = Mail()
 
-# Internasionalisasi — mendukung bilingual EN/ID
+# Internasionalisasi bilingual EN/ID
 babel = Babel()
 
-# CSRF Protection — mencegah Cross-Site Request Forgery pada semua form POST
-# Setiap form harus menyertakan token CSRF tersembunyi yang divalidasi server
+# CSRF Protection -- mencegah Cross-Site Request Forgery
 csrf = CSRFProtect()
 
-# Rate Limiter — membatasi jumlah request per IP untuk mencegah brute-force
-# get_remote_address: menggunakan IP address client sebagai identifier
+# Rate Limiter -- mencegah brute-force attack
 limiter = Limiter(
     key_func=get_remote_address,
-    # Default: 200 request per hari, 50 per jam untuk semua route
     default_limits=["200 per day", "50 per hour"],
-    # Simpan counter di memory (development) — ganti ke Redis untuk production
     storage_uri="memory://",
 )
 
 
+def _get_active_locale() -> str:
+    """
+    Callback locale selector untuk Flask-Babel.
+
+    Dipanggil otomatis oleh Flask-Babel pada setiap HTTP request
+    untuk menentukan bahasa yang akan digunakan dalam request tersebut.
+
+    Urutan prioritas:
+    1. session['lang'] -- diset via /api/set-language
+    2. BABEL_DEFAULT_LOCALE dari config ('en')
+
+    Returns:
+        Kode bahasa aktif: 'en' atau 'id'.
+    """
+    from flask import session, current_app
+
+    language_from_session = session.get("lang")
+    supported_languages = current_app.config.get("LANGUAGES", {"en": "English"})
+
+    if language_from_session in supported_languages:
+        return language_from_session
+
+    return current_app.config.get("BABEL_DEFAULT_LOCALE", "en")
+
+
 def create_app(config_override: dict = None) -> Flask:
     """
-    Factory function untuk membuat dan mengkonfigurasi instance aplikasi Flask.
+    Factory function untuk membuat instance aplikasi Flask.
 
-    Urutan inisialisasi penting:
+    Urutan inisialisasi:
     1. Buat Flask app
     2. Muat konfigurasi
-    3. Inisialisasi ekstensi (db, login, security)
-    4. Daftarkan blueprints (routes)
+    3. Inisialisasi ekstensi
+    4. Daftarkan blueprints
     5. Daftarkan error handlers
 
     Args:
-        config_override: Dict konfigurasi tambahan, biasanya untuk testing.
-                         Contoh: {"TESTING": True, "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:"}
+        config_override: Dict konfigurasi untuk testing.
 
     Returns:
-        Instance Flask yang sudah dikonfigurasi dan siap dijalankan.
+        Instance Flask yang sudah dikonfigurasi.
     """
     flask_app = Flask(__name__)
 
@@ -93,20 +109,15 @@ def create_app(config_override: dict = None) -> Flask:
 
 def _load_configuration(flask_app: Flask, config_override: dict = None) -> None:
     """
-    Muat konfigurasi aplikasi dari kelas Config yang sesuai.
-
-    Urutan prioritas konfigurasi:
-    1. DevelopmentConfig (default)
-    2. config_override (untuk testing — menimpa nilai dari DevelopmentConfig)
+    Muat konfigurasi dari DevelopmentConfig, lalu terapkan override jika ada.
 
     Args:
         flask_app: Instance Flask yang akan dikonfigurasi.
-        config_override: Dict konfigurasi tambahan (opsional).
+        config_override: Dict konfigurasi tambahan (opsional, untuk testing).
     """
     from app.config import DevelopmentConfig
     flask_app.config.from_object(DevelopmentConfig)
 
-    # Terapkan override jika ada — berguna untuk unit testing
     if config_override:
         flask_app.config.update(config_override)
 
@@ -115,47 +126,43 @@ def _initialize_extensions(flask_app: Flask) -> None:
     """
     Inisialisasi semua ekstensi Flask dengan mengikatnya ke app instance.
 
-    Setiap ekstensi dipanggil dengan init_app(flask_app) agar bisa
-    mengakses konfigurasi app dan app context saat dibutuhkan.
-
-    Security extensions:
-    - CSRFProtect: Aktif untuk semua route secara default
-    - Talisman: Menambahkan security headers ke semua response
-    - Limiter: Rate limiting — dikonfigurasi per-route di blueprints
+    Flask-Babel diinisialisasi dengan locale_selector=_get_active_locale
+    agar bahasa ditentukan dari session user pada setiap request.
 
     Args:
         flask_app: Instance Flask yang sudah dikonfigurasi.
     """
-    # Ekstensi database dan ORM
+    # Database dan ORM
     db.init_app(flask_app)
     migrate.init_app(flask_app, db)
 
-    # Ekstensi autentikasi
+    # Autentikasi -- redirect ke login jika akses halaman terlindungi
     login_manager.init_app(flask_app)
     login_manager.login_view = "auth.handle_login_form"
     login_manager.login_message = "Silakan login untuk mengakses halaman ini."
     login_manager.login_message_category = "info"
 
-    # Ekstensi email dan i18n
+    # Email
     mail.init_app(flask_app)
-    babel.init_app(flask_app)
 
-    # --- Security Extensions ---
+    # ============================================================
+    # Flask-Babel -- i18n bilingual EN/ID
+    #
+    # locale_selector=_get_active_locale memberitahu Flask-Babel
+    # untuk memanggil fungsi _get_active_locale() pada setiap request
+    # guna menentukan bahasa yang aktif dari session user.
+    # ============================================================
+    babel.init_app(flask_app, locale_selector=_get_active_locale)
 
-    # CSRF Protection: lindungi semua form POST dari serangan CSRF
-    # Token CSRF otomatis diinjeksi ke semua form yang menggunakan {{ form.hidden_tag() }}
-    # atau bisa diakses manual via {{ csrf_token() }} di template
+    # CSRF Protection -- aktif untuk semua form POST
     csrf.init_app(flask_app)
 
-    # Rate Limiter: inisialisasi tanpa Talisman untuk development
-    # (Talisman memerlukan HTTPS — diaktifkan hanya di production)
+    # Rate Limiter
     limiter.init_app(flask_app)
 
-    # Flask-Talisman: Security headers untuk production
-    # Dinonaktifkan di development karena memerlukan HTTPS
-    # Aktifkan di production dengan: Talisman(flask_app, force_https=True)
-    is_production_environment = not flask_app.config.get("DEBUG", True)
-    if is_production_environment:
+    # Talisman hanya aktif di production (memerlukan HTTPS)
+    is_production = not flask_app.config.get("DEBUG", True)
+    if is_production:
         _initialize_talisman_for_production(flask_app)
 
 
@@ -163,11 +170,8 @@ def _initialize_talisman_for_production(flask_app: Flask) -> None:
     """
     Inisialisasi Flask-Talisman untuk environment production.
 
-    Security headers yang ditambahkan:
-    - Strict-Transport-Security (HSTS): Paksa HTTPS
-    - X-Content-Type-Options: Cegah MIME sniffing
-    - X-Frame-Options: Cegah clickjacking
-    - Content-Security-Policy: Batasi sumber resource yang diizinkan
+    Menambahkan security headers: HSTS, X-Content-Type-Options,
+    X-Frame-Options, dan Content-Security-Policy.
 
     Args:
         flask_app: Instance Flask production.
@@ -175,7 +179,6 @@ def _initialize_talisman_for_production(flask_app: Flask) -> None:
     try:
         from flask_talisman import Talisman
 
-        # Content Security Policy — sesuaikan dengan CDN yang digunakan
         content_security_policy = {
             "default-src": "'self'",
             "script-src": [
@@ -185,7 +188,7 @@ def _initialize_talisman_for_production(flask_app: Flask) -> None:
             ],
             "style-src": [
                 "'self'",
-                "'unsafe-inline'",  # Diperlukan untuk Tailwind inline styles
+                "'unsafe-inline'",
                 "https://fonts.googleapis.com",
             ],
             "font-src": ["'self'", "https://fonts.gstatic.com"],
@@ -199,7 +202,6 @@ def _initialize_talisman_for_production(flask_app: Flask) -> None:
             content_security_policy=content_security_policy,
         )
     except ImportError:
-        # Jika Flask-Talisman belum terinstall, log warning dan lanjutkan
         flask_app.logger.warning(
             "Flask-Talisman tidak terinstall. Security headers tidak aktif."
         )
@@ -207,12 +209,15 @@ def _initialize_talisman_for_production(flask_app: Flask) -> None:
 
 def _register_blueprints(flask_app: Flask) -> None:
     """
-    Daftarkan semua blueprint (modul route) ke aplikasi Flask.
+    Daftarkan semua blueprint ke aplikasi Flask.
 
-    Setiap blueprint memiliki url_prefix untuk namespace yang jelas:
-    - main_bp: / (root — dashboard, pillar pages)
-    - auth_bp: /auth (register, login, logout)
-    - api_bp: /api (search, set-language — mengembalikan JSON)
+    Blueprint dan prefix URL:
+    - main_bp  : /          (dashboard, pillar pages)
+    - auth_bp  : /auth      (register, login, logout)
+    - api_bp   : /api       (search, set-language -- JSON)
+
+    Rate limiting 10 req/menit diterapkan pada auth_bp
+    untuk mencegah brute-force attack pada endpoint login.
 
     Args:
         flask_app: Instance Flask yang akan didaftarkan blueprint-nya.
@@ -225,8 +230,7 @@ def _register_blueprints(flask_app: Flask) -> None:
     flask_app.register_blueprint(auth_bp, url_prefix="/auth")
     flask_app.register_blueprint(api_bp, url_prefix="/api")
 
-    # Terapkan rate limiting khusus pada route login untuk mencegah brute-force
-    # Maksimal 10 percobaan login per menit per IP address
+    # Rate limiting khusus untuk auth -- mencegah brute-force login
     limiter.limit("10 per minute")(auth_bp)
 
 
@@ -234,8 +238,8 @@ def _register_error_handlers(flask_app: Flask) -> None:
     """
     Daftarkan handler untuk error HTTP umum.
 
-    Menampilkan halaman error yang ramah pengguna alih-alih
-    halaman error default Flask yang mengekspos informasi teknis.
+    Menampilkan halaman error yang ramah pengguna, bukan
+    halaman default Flask yang mengekspos informasi teknis.
 
     Args:
         flask_app: Instance Flask yang akan didaftarkan error handler-nya.
@@ -255,12 +259,9 @@ def _register_error_handlers(flask_app: Flask) -> None:
     @flask_app.errorhandler(429)
     def handle_rate_limit_exceeded(error):
         """
-        Tampilkan halaman 429 saat rate limit terlampaui.
+        Tampilkan pesan 429 saat rate limit terlampaui.
         Terjadi saat user mencoba login terlalu banyak dalam waktu singkat.
         """
-        from flask import render_template, flash, redirect, url_for
-        flash(
-            "Terlalu banyak percobaan. Silakan tunggu beberapa menit.",
-            "error"
-        )
+        from flask import flash, redirect, url_for
+        flash("Terlalu banyak percobaan. Silakan tunggu beberapa menit.", "error")
         return redirect(url_for("auth.handle_login_form"))

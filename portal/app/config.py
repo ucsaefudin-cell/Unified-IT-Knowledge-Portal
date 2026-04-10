@@ -31,18 +31,32 @@ class BaseConfig:
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
     MAIL_DEFAULT_SENDER = os.environ.get("MAIL_USERNAME", "noreply@portal.local")
 
-    # Konfigurasi AWS (untuk SES dan S3)
+    # Konfigurasi AWS (untuk SES dan S3) — akan diganti ke GCP di production
     AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
     AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
     AWS_REGION = os.environ.get("AWS_REGION", "ap-southeast-1")
     S3_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME")
 
+    # Konfigurasi GCP (Cloud Storage dan Compute Engine)
+    GCP_BUCKET_NAME = os.environ.get("GCP_BUCKET_NAME")
+    GCP_INSTANCE_ID = os.environ.get("GCP_INSTANCE_ID")
+    GCP_ZONE = os.environ.get("GCP_ZONE", "asia-southeast2-a")
+    GCP_PROJECT_ID = os.environ.get("GCP_PROJECT_ID")
+
     # Durasi sesi aktif: 60 menit (dalam detik)
     PERMANENT_SESSION_LIFETIME = 3600
 
-    # Bahasa default portal
+    # ============================================================
+    # Konfigurasi Flask-Babel untuk bilingual EN/ID
+    # BABEL_DEFAULT_LOCALE: bahasa default saat tidak ada preferensi user
+    # LANGUAGES: dict mapping kode bahasa ke nama tampilan
+    # ============================================================
     BABEL_DEFAULT_LOCALE = "en"
-    BABEL_SUPPORTED_LOCALES = ["en", "id"]
+    BABEL_DEFAULT_TIMEZONE = "Asia/Jakarta"
+    LANGUAGES = {
+        "en": "English",
+        "id": "Bahasa Indonesia",
+    }
 
 
 class DevelopmentConfig(BaseConfig):

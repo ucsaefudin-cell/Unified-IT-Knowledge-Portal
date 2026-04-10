@@ -100,12 +100,12 @@ Database menggunakan GCP Cloud SQL PostgreSQL untuk production, SQLite lokal unt
 - [ ] 5. Checkpoint — Pastikan semua test autentikasi lulus
   - Jalankan `pytest portal/tests/test_auth*.py`, pastikan tidak ada kegagalan.
 
-- [ ] 6. Implementasi Search Service dan API endpoint
-  - [ ] 6.1 Buat `portal/app/services/search_service.py`
+- [-] 6. Implementasi Search Service dan API endpoint
+  - [x] 6.1 Buat `portal/app/services/search_service.py`
     - Fungsi pencarian lintas KnowledgeArticle dan BestPractice
     - Filter akses: body_en/body_id disembunyikan untuk guest pada BestPractice
     - _Requirements: 7.2, 7.3, 7.4, 7.5_
-  - [ ] 6.2 Buat `portal/app/routes/api.py`
+  - [x] 6.2 Buat `portal/app/routes/api.py`
     - Route: GET /api/search?q=<query>&lang=<en|id>
     - Route: POST /api/set-language
     - _Requirements: 7.1, 7.2, 8.2, 8.4_
@@ -155,7 +155,7 @@ Database menggunakan GCP Cloud SQL PostgreSQL untuk production, SQLite lokal unt
     - Dark/Light mode toggle dengan localStorage persistence
     - Sun/Moon icon swap, transisi smooth antar tema
 
-- [ ] 9. Implementasi bilingual i18n (Flask-Babel)
+- [x] 9. Implementasi bilingual i18n (Flask-Babel)
   - Buat `portal/app/translations/en/messages.json` dan `portal/app/translations/id/messages.json`
   - Integrasikan Flask-Babel ke app factory untuk resolusi bahasa dari session
   - _Requirements: 8.1, 8.2, 8.3, 8.5, 8.6_

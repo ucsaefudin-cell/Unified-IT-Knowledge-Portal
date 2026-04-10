@@ -1,14 +1,103 @@
 {
-  "nav.home": "Home",
-  "nav.sap": "SAP Business One",
-  "nav.aws": "AWS Cloud",
-  "nav.best_practices": "Best Practices",
-  "nav.login": "Login",
-  "nav.register": "Register",
-  "nav.logout": "Logout",
-  "search.placeholder": "Search articles...",
-  "search.no_results": "No results found for your search.",
-  "content.no_articles": "No content available yet.",
-  "auth.register_title": "Create New Account",
-  "auth.login_title": "Sign In to Your Account"
+  "_comment": "File terjemahan Bahasa Inggris — Unified IT Knowledge Portal",
+  "_note": "File ini digunakan oleh i18n.js untuk terjemahan client-side. Untuk server-side (Flask-Babel), gunakan file .po/.mo di folder locale/",
+
+  "nav": {
+    "dashboard": "Dashboard",
+    "erp_systems": "ERP Systems",
+    "cloud_infrastructure": "Cloud Infrastructure",
+    "best_practices": "Best Practices",
+    "troubleshooting": "Troubleshooting",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+
+  "hero": {
+    "badge": "Knowledge Base — Live",
+    "title": "Unified IT",
+    "subtitle": "Your centralized reference for Enterprise Resource Planning and Cloud Computing infrastructure — featuring deep-dives into SAP Business One and Multi-Cloud strategies (Azure & GCP).",
+    "btn_erp": "Explore ERP",
+    "btn_cloud": "Explore Cloud",
+    "btn_best_practices": "Best Practices 🔒",
+    "btn_troubleshooting": "Troubleshooting & Solutions 🔒"
+  },
+
+  "knowledge_base": {
+    "section_title": "Knowledge Base",
+    "section_badge": "Public — No login required",
+    "erp_card_subtitle": "Featured: SAP Business One Modules",
+    "cloud_card_subtitle": "Expertise: Multi-Cloud (GCP & Azure)",
+    "articles_label": "articles",
+    "view_all_erp": "View All ERP Articles",
+    "view_all_cloud": "View All Cloud Articles",
+    "no_erp_articles": "No ERP articles available yet.",
+    "no_cloud_articles": "No Cloud articles available yet."
+  },
+
+  "best_practices": {
+    "section_title": "Business Best Practices",
+    "section_subtitle": "Advanced case studies — Register to unlock full content",
+    "view_all": "View All",
+    "login_to_unlock": "Login to unlock full content",
+    "register_free": "Register Free",
+    "read_full_guide": "Read full guide",
+    "coming_soon": "Best practices coming soon."
+  },
+
+  "troubleshooting": {
+    "section_title": "Troubleshooting & Solutions",
+    "section_subtitle": "Reactive fixes for real-world issues"
+  },
+
+  "proactive": {
+    "section_title": "Proactive Best Practices",
+    "section_subtitle": "Prevention & Optimization guides",
+    "unlock": "Unlock"
+  },
+
+  "cta_banner": {
+    "title": "Unlock All Best Practices",
+    "subtitle": "Create a free account to access detailed SAP & GCP implementation guides, case studies, and troubleshooting playbooks.",
+    "btn_register": "Create Free Account",
+    "btn_login": "Already have an account? Login"
+  },
+
+  "auth": {
+    "register_title": "Create Free Account",
+    "register_subtitle": "Unlock all SAP & GCP best practice guides",
+    "login_title": "Welcome Back",
+    "login_subtitle": "Login to access best practice content",
+    "email_label": "Email Address",
+    "password_label": "Password (min. 8 characters)",
+    "create_account_btn": "Create Account",
+    "login_btn": "Login",
+    "verification_note": "A verification email will be sent to activate your account.",
+    "already_have_account": "Already have an account?",
+    "no_account": "Don't have an account?",
+    "login_link": "Login",
+    "register_link": "Register free"
+  },
+
+  "search": {
+    "placeholder": "Search articles...",
+    "no_results": "No results for",
+    "results_found": "results found",
+    "result_found": "result found",
+    "unavailable": "Search is temporarily unavailable."
+  },
+
+  "footer": {
+    "portal_name": "Unified IT Knowledge Portal",
+    "portal_tagline": "SAP Business One & GCP Cloud Infrastructure",
+    "copyright": "© 2026 Ucu Saefudin. All rights reserved."
+  },
+
+  "common": {
+    "added": "Added",
+    "published": "Published",
+    "all": "All",
+    "members_only": "Members Only Content",
+    "members_only_subtitle": "Create a free account to read the full implementation guide"
+  }
 }

@@ -1,14 +1,103 @@
 {
-  "nav.home": "Beranda",
-  "nav.sap": "SAP Business One",
-  "nav.aws": "AWS Cloud",
-  "nav.best_practices": "Best Practices",
-  "nav.login": "Masuk",
-  "nav.register": "Daftar",
-  "nav.logout": "Keluar",
-  "search.placeholder": "Cari artikel...",
-  "search.no_results": "Tidak ada hasil yang ditemukan.",
-  "content.no_articles": "Belum ada konten tersedia.",
-  "auth.register_title": "Buat Akun Baru",
-  "auth.login_title": "Masuk ke Akun Anda"
+  "_comment": "File terjemahan Bahasa Indonesia — Unified IT Knowledge Portal",
+  "_note": "File ini digunakan oleh i18n.js untuk terjemahan client-side. Untuk server-side (Flask-Babel), gunakan file .po/.mo di folder locale/",
+
+  "nav": {
+    "dashboard": "Beranda",
+    "erp_systems": "Sistem ERP",
+    "cloud_infrastructure": "Infrastruktur Cloud",
+    "best_practices": "Praktik Terbaik",
+    "troubleshooting": "Pemecahan Masalah",
+    "login": "Masuk",
+    "register": "Daftar",
+    "logout": "Keluar"
+  },
+
+  "hero": {
+    "badge": "Basis Pengetahuan — Aktif",
+    "title": "Portal IT",
+    "subtitle": "Referensi terpusat untuk Enterprise Resource Planning dan infrastruktur Cloud Computing — menampilkan pembahasan mendalam tentang SAP Business One dan strategi Multi-Cloud (Azure & GCP).",
+    "btn_erp": "Jelajahi ERP",
+    "btn_cloud": "Jelajahi Cloud",
+    "btn_best_practices": "Praktik Terbaik 🔒",
+    "btn_troubleshooting": "Pemecahan Masalah 🔒"
+  },
+
+  "knowledge_base": {
+    "section_title": "Basis Pengetahuan",
+    "section_badge": "Publik — Tidak perlu login",
+    "erp_card_subtitle": "Unggulan: Modul SAP Business One",
+    "cloud_card_subtitle": "Keahlian: Multi-Cloud (GCP & Azure)",
+    "articles_label": "artikel",
+    "view_all_erp": "Lihat Semua Artikel ERP",
+    "view_all_cloud": "Lihat Semua Artikel Cloud",
+    "no_erp_articles": "Belum ada artikel ERP.",
+    "no_cloud_articles": "Belum ada artikel Cloud."
+  },
+
+  "best_practices": {
+    "section_title": "Praktik Bisnis Terbaik",
+    "section_subtitle": "Studi kasus lanjutan — Daftar untuk membuka konten penuh",
+    "view_all": "Lihat Semua",
+    "login_to_unlock": "Login untuk membuka konten penuh",
+    "register_free": "Daftar Gratis",
+    "read_full_guide": "Baca panduan lengkap",
+    "coming_soon": "Praktik terbaik segera hadir."
+  },
+
+  "troubleshooting": {
+    "section_title": "Pemecahan Masalah & Solusi",
+    "section_subtitle": "Solusi reaktif untuk masalah nyata"
+  },
+
+  "proactive": {
+    "section_title": "Praktik Terbaik Proaktif",
+    "section_subtitle": "Panduan pencegahan & optimasi",
+    "unlock": "Buka"
+  },
+
+  "cta_banner": {
+    "title": "Buka Semua Praktik Terbaik",
+    "subtitle": "Buat akun gratis untuk mengakses panduan implementasi SAP & GCP, studi kasus, dan panduan troubleshooting secara detail.",
+    "btn_register": "Buat Akun Gratis",
+    "btn_login": "Sudah punya akun? Masuk"
+  },
+
+  "auth": {
+    "register_title": "Buat Akun Gratis",
+    "register_subtitle": "Buka semua panduan praktik terbaik SAP & GCP",
+    "login_title": "Selamat Datang Kembali",
+    "login_subtitle": "Login untuk mengakses konten praktik terbaik",
+    "email_label": "Alamat Email",
+    "password_label": "Kata Sandi (min. 8 karakter)",
+    "create_account_btn": "Buat Akun",
+    "login_btn": "Masuk",
+    "verification_note": "Email verifikasi akan dikirim untuk mengaktifkan akun Anda.",
+    "already_have_account": "Sudah punya akun?",
+    "no_account": "Belum punya akun?",
+    "login_link": "Masuk",
+    "register_link": "Daftar gratis"
+  },
+
+  "search": {
+    "placeholder": "Cari artikel...",
+    "no_results": "Tidak ada hasil untuk",
+    "results_found": "hasil ditemukan",
+    "result_found": "hasil ditemukan",
+    "unavailable": "Pencarian tidak tersedia saat ini."
+  },
+
+  "footer": {
+    "portal_name": "Unified IT Knowledge Portal",
+    "portal_tagline": "SAP Business One & Infrastruktur GCP Cloud",
+    "copyright": "© 2026 Ucu Saefudin. Hak cipta dilindungi."
+  },
+
+  "common": {
+    "added": "Ditambahkan",
+    "published": "Diterbitkan",
+    "all": "Semua",
+    "members_only": "Konten Khusus Member",
+    "members_only_subtitle": "Buat akun gratis untuk membaca panduan implementasi lengkap"
+  }
 }

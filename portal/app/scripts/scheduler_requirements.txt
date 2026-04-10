@@ -1,0 +1,10 @@
+# requirements.txt untuk GCP Cloud Function -- VM Scheduler FinOps
+# File ini TERPISAH dari requirements.txt utama portal Flask
+# Gunakan file ini saat deploy ke Cloud Functions
+
+# Library resmi GCP untuk Compute Engine API
+google-cloud-compute==1.19.2
+
+# Framework untuk menjalankan Cloud Functions secara lokal (testing)
+# dan sebagai runtime handler di GCP
+functions-framework==3.8.1

@@ -174,7 +174,7 @@ Database menggunakan GCP Cloud SQL PostgreSQL untuk production, SQLite lokal unt
     - **Property 13: Seeder is idempotent**
     - **Validates: Requirements 9.7**
 
-- [ ] 11. Implementasi GCP Cloud Scheduler Script (FinOps)
+- [x] 11. Implementasi GCP Cloud Scheduler Script (FinOps)
   - Buat `portal/app/scripts/scheduler.py`
   - GCP Cloud Functions handler yang membaca GCP_INSTANCE_ID dan ACTION dari env/event
   - Logika start/stop Compute Engine VM dengan pengecekan state saat ini (idempotent)
